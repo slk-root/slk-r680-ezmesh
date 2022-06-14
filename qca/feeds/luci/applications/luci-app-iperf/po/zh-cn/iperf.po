@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "Iperf Test"
+msgstr "Iperf测试"
+
+msgid "Iperf streaming test"
+msgstr "Iperf打流测试"
+
+msgid "Iperf2 Server"
+msgstr "Iperf2服务开启"
+
+msgid "Iperf3 Server"
+msgstr "Iperf3服务开启"
+
+msgid "Iperf2 Port"
+msgstr "Iperf2测试端口"
+
+msgid "Iperf3 Port"
+msgstr "Iperf3测试端口"

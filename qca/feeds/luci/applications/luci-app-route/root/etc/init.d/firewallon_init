@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright 2019 Xingwang Liao <kuoruan@gmail.com>
+# Licensed to the public under the MIT License.
+#
+START=99
+
+start()
+{
+	cp /etc/config/firewall /etc/config/firewallon
+	rm -rf /etc/init.d/firewallon_init
+}

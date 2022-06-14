@@ -1,0 +1,56 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright 2019 Xingwang Liao <kuoruan@gmail.com>
+# Licensed to the public under the MIT License.
+#
+USE_PROCD=1
+config="bwlist"
+
+append_mode(){
+	uci delete $config.mode
+	uci set $config.mode=rule
+	uci set $config.mode.enabled="$enabled"
+	uci set $config.mode.dest='wan'
+	uci set $config.mode.src='lan'
+	uci set $config.mode.proto='all'
+	if [ "$mode" == "white" ];then
+		uci set $config.mode.target='REJECT'
+		uci set $config.mode.name='REJECT-OTHER'
+	elif [ "$mode" == "black" ];then
+		uci set $config.mode.target='ACCEPT'
+		uci set $config.mode.name='ACCEPT-OTHER'
+	fi
+	uci commit bwlist
+}
+
+validate_bwlist_main() {
+	uci_validate_section "$config" "bwlist" "$1" \
+		'enabled:bool:0' \
+		'mode:string'
+}
+
+start_instance() {
+	cat /etc/config/firewallon > /etc/config/firewall
+	cat /etc/config/redirect >> /etc/config/firewall
+	if validate_bwlist_main "$1" ;then
+		if [ "x$enabled" == "x1" ];then
+			append_mode
+			cat /etc/config/bwlist >> /etc/config/firewall
+		else
+			uci delete $config.mode
+			uci commit bwlist
+		fi
+	fi
+	/etc/init.d/firewall reload
+	sleep 2s
+	/etc/init.d/filter restart
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$config"
+}
+
+start_service() {
+	config_load "$config"
+	config_foreach start_instance "bwlist"
+}

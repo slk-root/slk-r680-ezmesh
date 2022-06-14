@@ -1,0 +1,26 @@
+
+config wifi-iface 'wlan0'
+	option en '1'
+	option security 'encryption'
+	option key 'slk100200'
+	option channel '40'
+	option htmode 'HT80'
+	option txpower '27'
+	option wds '0'
+
+config wifi-iface 'wlan1'
+	option en '1'
+	option security 'encryption'
+	option key 'slk100200'
+	option channel '3'
+	option htmode 'HT40'
+	option txpower '27'
+	option wds '0'
+
+config wifi-iface 'sta0'
+	option device 'wifi0'
+	option en '0'
+
+config interface 'wific'
+	option proto 'dhcp'
+	

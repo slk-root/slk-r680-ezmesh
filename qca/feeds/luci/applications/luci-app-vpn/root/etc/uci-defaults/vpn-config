@@ -1,0 +1,51 @@
+#!/bin/sh
+uci batch <<-EOF
+	set network.pptp=interface
+	set network.pptp.proto='pptp'
+	set network.pptp.auto='0'
+	set network.pptp.metric='8'
+	set network.l2tp=interface
+	set network.l2tp.proto='l2tp'
+	set network.l2tp.auto='0'
+	set network.l2tp.metric='9'
+	set network.openvpn=interface
+	set network.openvpn.enable='0'
+	set network.openvpn.ifname='tun0'
+	set network.gre=interface
+	set network.gre.proto='gretap'
+	set network.gre.auto='0'
+	set network.gre_static=interface
+	set network.gre_static.proto='static'
+	set network.gre_static.ifname='gre4t-gre'
+	
+	commit network
+	
+	add_list firewall.@zone[1].network='l2tp'
+	add_list firewall.@zone[1].network='pptp'
+	add_list firewall.@zone[1].network='openvpn'
+	add_list firewall.@zone[1].network='gre'
+	add_list firewall.@zone[1].network='gre_static'
+
+    commit firewall
+EOF
+
+if [ $(uci get system.@system[0].model) == 'WL-450T-LT' ];then
+uci batch <<-EOF
+	set openvpn.sample_client.client='1'
+	set openvpn.sample_client.dev='tun'
+	set openvpn.sample_client.nobind='1'
+	set openvpn.sample_client.comp_lzo='yes'
+	set openvpn.sample_client.verb='3'
+	set openvpn.sample_client.proto='tcp'
+	set openvpn.sample_client.port='443'
+	set openvpn.sample_client.auth='SHA1'
+	set openvpn.sample_client.cipher='AES-256-CBC'
+	set openvpn.sample_client.lzo='yes'
+	set openvpn.sample_client.remote_cert_tls='server'
+	set openvpn.sample_client.remote='my_server_1 443'
+
+    commit openvpn
+EOF
+fi
+
+

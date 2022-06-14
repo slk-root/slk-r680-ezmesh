@@ -1,0 +1,69 @@
+#!/bin/sh 
+
+en=0 #调试开关：0关闭，1打开 ，2输出到文件
+outfile="/tmp/slklog"	#输出文件
+Debug()
+{
+	tim=$(date "+%Y-%m-%d %H:%M:%S")	#获取系统时间
+	if [ $en == 1 ]; then
+		echo $tim $1					#打印输出
+	elif [ $en == 2 ]; then
+		echo $tim $1 >> $outfile		#输出到文件
+	fi
+}
+
+IPQ6018vlan() 
+{
+	proto=$(uci get network.wan.proto)
+	ifname=$(uci -q get network.wan.interface)
+	if [ "$proto" == "disable" ]; then
+		uci set network.wan.auto='0'
+	else
+		uci del network.wan.auto
+	fi
+	if [ "$ifname" == "eth0" ];then
+		if [ "$proto" == "aslan" ]; then
+			Debug "$proto"
+			uci set network.lan.ifname="eth0 eth1 eth2 eth3 eth4"
+			uci set network.wan.ifname="-"
+		else
+			Debug "2"
+			uci set network.lan.ifname="eth1 eth2 eth3 eth4"
+			uci set network.wan.ifname="eth0"
+		fi
+	elif [ "$ifname" == "eth4" ];then
+		if [ "$proto" == "aslan" ]; then
+			Debug "$proto"
+			uci set network.lan.ifname="eth0 eth1 eth2 eth3 eth4"
+			uci set network.wan.ifname="-"
+		else
+			Debug "2"
+			uci set network.lan.ifname="eth0 eth1 eth2 eth3"
+			uci set network.wan.ifname="eth4"
+		fi
+	fi
+	wan6=$(uci -q get network.wan6)
+	if [ -n "$wan6" ];then
+		if [ "$proto" == "aslan" ]; then
+			uci set network.wan6.ifname='-'
+		else
+			uci set network.wan6.ifname=$ifname
+		fi
+	fi
+	
+}
+
+mian() {
+
+	IPQ6018vlan
+	
+	uci commit network
+	sleep 3s;
+	#/etc/init.d/network restart 
+	ifup wan
+}
+
+mian
+
+
+

@@ -1,0 +1,37 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+kill_exe()
+{	
+	if [ $(pgrep -f $1 | wc -l) -ne 0 ];then
+		echo $(pgrep -f $1 | wc -l)
+		echo $(pgrep -f $1)
+		kk=$(pgrep -f $1)
+		echo $kk
+		kill -9 $kk
+	fi
+}
+stop()
+{
+	if [ $1 =="xl2tpd" ]; then
+		kill "xl2tpd -D"
+	elif [ $1 ]; then
+		kill_exe $1
+	fi
+}
+
+start()
+{
+	
+	if [ $1 ];then
+		echo $1
+		kill_exe "/etc/vpnscript/$1"
+		sleep 1
+		/bin/sh /etc/vpnscript/$1 &
+	else
+		#/bin/sh /etc/vpnscript/re_l2tp &
+		/bin/sh /etc/vpnscript/re_openvpn &
+		/bin/sh /etc/vpnscript/re_frpc &
+	fi
+	
+}

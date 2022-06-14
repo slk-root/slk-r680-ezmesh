@@ -1,0 +1,10 @@
+# sn sn8622
+# model_name SLK-R680
+# host_name SLK
+# mobile_network SIM8200
+# lan_ipaddr 192.168.2.1
+# lan_netmask 255.255.255.0
+# ssid2 SLK-Router_2G
+# key2 slk100200
+# ssid5 SLK-Router_5G
+# key5 slk100200

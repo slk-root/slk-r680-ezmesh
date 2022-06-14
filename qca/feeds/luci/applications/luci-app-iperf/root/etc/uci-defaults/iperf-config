@@ -1,0 +1,9 @@
+#!/bin/sh
+uci batch <<-EOF
+	uci system.@iperf[0]=iperf
+	uci system.@iperf[0].ipf2='0'
+	uci system.@iperf[0].ipf3='0'
+    commit system
+EOF
+
+

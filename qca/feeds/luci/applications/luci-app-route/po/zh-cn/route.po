@@ -1,0 +1,80 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-30 17:00+0200\n"
+"PO-Revision-Date: 2014-06-14 18:05+0200\n"
+"Last-Translator: jame-he <755085131@qq.com>\n"
+"Language-Team: QQ Group 75543259 <axishero@foxmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "port %s"
+msgstr "端口 %s"
+
+msgid "External"
+msgstr "外部区域"
+
+msgid "Forward to internal"
+msgstr "转发到内部区域"
+
+msgid "Black & White List"
+msgstr "黑白名单"
+
+msgid "Black/White List"
+msgstr "黑白名单"
+
+msgid "Mode Configuration"
+msgstr "过滤模式"
+
+msgid "White List"
+msgstr "白名单"
+
+msgid "Black List"
+msgstr "黑名单"
+
+msgid "Local"
+msgstr "本地"
+
+msgid "Accept forward"
+msgstr "允许"
+
+msgid "Refuse forward"
+msgstr "禁止"
+
+msgid "Local IP address"
+msgstr "本地IP地址"
+
+msgid "Local MAC address"
+msgstr "本地MAC地址"
+
+msgid "ACCEPT"
+msgstr "允许"
+
+msgid "REJECT"
+msgstr "禁止"
+
+msgid "Name List"
+msgstr "列表"
+
+msgid "New list"
+msgstr "新建名单"
+
+msgid "By filtering IP addresses and MAC addresses, black and white lists can help manage the network connection status of access devices."
+msgstr "通过过滤IP地址和MAC地址，黑白名单可以帮助管理接入设备连接网络状态。"
+
+msgid "White List:Only allow devices in the following list to connect to the Internet.<br />"
+msgstr "白名单：仅允许以下列表中的设备联网<br />"
+
+msgid "Black List:Devices in the following list are prohibited from connecting to the Internet."
+msgstr "黑名单：禁止以下列表中的设备联网"
+
+msgid "All"
+msgstr "所有"
+
+msgid "Completely forward the communication sent to a port of the external network to a designated port of an address of the internal network."
+msgstr "可将发往外网的一个端口的通信完全转发给内网一个地址的指定端口"

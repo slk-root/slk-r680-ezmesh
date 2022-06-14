@@ -1,0 +1,49 @@
+#!/bin/sh
+str=$1
+ipv4=$2
+
+
+kill_exe()
+{
+	if [ $( pgrep -f $1 | wc -l ) -ne 0 ];then
+		kk=$(pgrep -f $1)
+		kill -9 $kk
+		echo "Kill $kk"
+	fi
+}
+
+wifi_test()
+{
+	rmmod wifi_3_0
+	rmmod wifi_2_0
+	rmmod qca_ol
+	insmod qca_ol hw_mode_id=1 testmode=1 cfg80211_config=1
+	insmod wifi_3_0
+	if [ -n "$ipv4" ];then
+		diag_socket_app -a $ipv4 &
+	else
+		diag_socket_app -a 192.168.2.11 &
+	fi
+	/etc/init.d/ftm start
+	/usr/sbin/ftm -n -dd &
+}
+
+if [ "$str" = "stop" ]; then
+	wifi down
+	echo "Wifi stop!!!"
+	kill_exe "diag_socket_app"
+	kill_exe "ftm"
+
+elif [ "$str" = "start" ]; then
+	echo "Wifi start ^~^"
+	wifi_test
+elif [ "$str" = "restart" ]; then
+	echo "Wifi restart!"
+	wifi down
+	kill_exe "diag_socket_app"
+	kill_exe "ftm"
+	sleep 1
+	wifi_test
+else
+	wifi_test
+fi

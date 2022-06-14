@@ -1,0 +1,43 @@
+#!/bin/sh /etc/rc.common
+START=93
+STOP=101
+
+kill_exe()
+{
+	if [ $( pgrep -f $1 | wc -l ) -ne 0 ];then
+		kk=$(pgrep -f $1)
+		kill -9 $kk
+		echo "Kill $kk"
+	fi
+}
+
+run_iperf()
+{
+	ipf2=$(uci get system.@iperf[0].ipf2)
+	if [ -n "$ipf2" ];then
+		ipf2port=$(uci get system.@iperf[0].ipf2port)
+		echo "iperf -s -p $ipf2port enadled"
+		iperf -s -p $ipf2port &
+	fi
+	
+	ipf3=$(uci get system.@iperf[0].ipf3)
+	if [ -n "$ipf3" ];then
+		ipf3port=$(uci get system.@iperf[0].ipf3port)
+		echo "iperf3 -s -p $ipf3port enadled"
+		iperf3 -s -p $ipf3port &
+	fi
+}
+
+start()
+{	
+	echo "iperf start !!!"
+	run_iperf
+}
+
+stop()
+{
+	echo "iperf stop !!!!"
+	kill_exe iperf
+}
+
+

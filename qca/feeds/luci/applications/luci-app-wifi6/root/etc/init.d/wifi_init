@@ -1,0 +1,179 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 OpenWrt.org
+
+START=50
+STOP=90
+
+ssid_init()
+{
+	wifissid=$(uci -q get wificonfig.wlan0.ssid)
+	if [ -z "$wifissid" ];then
+		wifi2g=$(uci -q get wireless.@wifi-iface[1].ssid)
+		wifi5g=$(uci -q get wireless.@wifi-iface[0].ssid)
+		uci set wificonfig.wlan0.ssid=$wifi5g
+		uci set wificonfig.wlan1.ssid=$wifi2g
+		uci commit wificonfig	
+	fi
+}
+
+wifi_seting()
+{
+	###waln0设置
+	en1=$(uci -q get wificonfig.wlan0.en)
+	if [ -n "$en1" ];then
+		echo "wifi on"
+		uci set wireless.@wifi-iface[0].device='wifi0'
+	else
+		echo "wifi off"
+		uci -q del wireless.@wifi-iface[0].device
+	fi
+	ssid1=$(uci -q get wificonfig.wlan0.ssid)
+		uci set wireless.@wifi-iface[0].ssid=$ssid1
+		echo "ssid=$ssid1"
+	security1=$(uci -q get wificonfig.wlan0.security)
+	if [ $security1 == "encryption" ];then
+		uci set wireless.@wifi-iface[0].encryption='psk2+ccmp'
+		key1=$(uci -q get wificonfig.wlan0.key)
+		uci set wireless.@wifi-iface[0].key=$key1
+	else
+		uci set wireless.@wifi-iface[0].encryption='none'
+		uci -q del wireless.@wifi-iface[0].key
+	fi
+	hidden1=$(uci -q get wificonfig.wlan0.hidden)
+		uci set wireless.@wifi-iface[0].hidden=$hidden1
+	channel1=$(uci -q get wificonfig.wlan0.channel)
+		uci set wireless.wifi0.channel=$channel1
+	htmode1=$(uci -q get wificonfig.wlan0.htmode)
+		uci set wireless.wifi0.htmode=$htmode1
+	#txpower1=$(uci -q get wificonfig.wlan0.txpower)
+		#uci set wireless.wifi0.txpower=$txpower1
+	wds1=$(uci -q get wificonfig.wlan0.wds)
+		uci set wireless.@wifi-iface[0].wds=$wds1
+		
+	###waln1设置
+	en2=$(uci -q get wificonfig.wlan1.en)
+	if [ -n "$en2" ];then
+		echo "wifi on"
+		uci set wireless.@wifi-iface[1].device='wifi1'
+	else
+		echo "wifi down"
+		uci -q del wireless.@wifi-iface[1].device
+	fi
+	ssid2=$(uci -q get wificonfig.wlan1.ssid)
+		uci set wireless.@wifi-iface[1].ssid=$ssid2
+	security2=$(uci -q get wificonfig.wlan1.security)
+	if [ $security2 == "encryption" ];then
+		uci set wireless.@wifi-iface[1].encryption='psk2+ccmp' ##'psk-mixed'
+		key2=$(uci -q get wificonfig.wlan1.key)
+		uci set wireless.@wifi-iface[1].key=$key2
+	else
+		uci set wireless.@wifi-iface[1].encryption='none'
+		uci -q del wireless.@wifi-iface[1].key
+	fi
+	hidden2=$(uci -q get wificonfig.wlan1.hidden)
+		uci set wireless.@wifi-iface[1].hidden=$hidden2
+	channel2=$(uci -q get wificonfig.wlan1.channel)
+		uci set wireless.wifi1.channel=$channel2
+	htmode2=$(uci -q get wificonfig.wlan1.htmode)
+		uci set wireless.wifi1.htmode=$htmode2
+	#txpower2=$(uci -q get wificonfig.wlan1.txpower)
+		#uci set wireless.wifi1.txpower=$txpower2
+	wds2=$(uci -q get wificonfig.wlan1.wds)
+		uci set wireless.@wifi-iface[1].wds=$wds2
+
+
+	en3=$(uci -q get wificonfig.sta0.en)
+	if [ -z "$en3" ] || [ "$en3" == "0" ];then
+		echo "sta off"
+		uci set wireless.sta0.disabled='1'
+		uci set network.wific.ifname='-'
+	else
+		echo "sta on"
+		uci -q del wireless.sta0.disabled
+		proto=$(uci -q get wificonfig.wific.proto)
+		if [ "$proto" == "bridgelan" ]; then
+			uci set network.wific.proto='dhcp'
+			uci set wireless.sta0.network='lan'
+			uci set wireless.sta0.extap='1'
+			uci set wireless.sta0.vap_ind='1'
+		else
+			uci set wireless.sta0.network='wific'
+			uci set network.wific.proto=$proto
+			ipaddr=$(uci -q get wificonfig.wific.ipaddr)
+			if [ -n "$ipaddr" ];then
+				uci set network.wific.ipaddr=$ipaddr
+			fi
+			netmask=$(uci -q get wificonfig.wific.netmask)
+			if [ -n "$netmask" ];then
+				uci set network.wific.netmask=$netmask
+			fi
+			gateway=$(uci -q get wificonfig.wific.gateway)
+			if [ -n "$gateway" ];then
+				uci set network.wific.gateway=$gateway
+			fi
+			dns=$(uci -q get wificonfig.wific.dns)
+			if [ -n "$dns" ];then
+				uci set network.wific.dns=$dns
+			fi
+			uci -q del wireless.sta0.extap
+			uci -q del wireless.sta0.vap_ind
+		fi
+		device=$(uci -q get wificonfig.sta0.device)
+		if [ "$device" == "wifi0" ];then
+			if [ -n "$en1" ];then
+				uci set wireless.sta0.ifname='ath01'
+				uci set network.wific.ifname='ath01'
+			else
+				uci set wireless.sta0.ifname='ath0'
+				uci set network.wific.ifname='ath0'
+			fi
+			uci set wireless.sta0.device='wifi0'
+		elif [ "$device" == "wifi1" ];then
+			if [ -n "$en2" ];then
+				uci set wireless.sta0.ifname='ath11'
+				uci set network.wific.ifname='ath11'
+			else
+				uci set wireless.sta0.ifname='ath1'
+				uci set network.wific.ifname='ath1'
+			fi
+			uci set wireless.sta0.device='wifi1'
+		fi
+		ssid3=$(uci -q get wificonfig.sta0.ssid)
+			uci set wireless.sta0.ssid=$ssid3
+		security3=$(uci -q get wificonfig.sta0.security)
+		if [ $security3 == "encryption" ];then
+			uci set wireless.sta0.encryption='psk2+ccmp' ##'psk-mixed'
+			key3=$(uci -q get wificonfig.sta0.key)
+			uci set wireless.sta0.key=$key3
+		else
+			uci set wireless.sta0.encryption='none'
+			uci -q del wireless.sta0.key
+		fi
+		wds3=$(uci -q get wificonfig.sta0.wds)
+			uci set wireless.sta0.wds=$wds3
+	fi
+	uci commit wireless
+	uci commit network
+	sync
+}
+
+
+start()
+{	
+	#echo "=========================="
+	# config_load wificonfig
+	# config_foreach run_wifi
+	ssid_init
+	wifi_seting
+	sleep 1
+	wifi up
+	
+}
+
+restart() {
+	wifi down
+	wifi_seting
+	sleep 1
+	wifi up
+}
+

@@ -1,0 +1,149 @@
+<%-
+	local fw = require "luci.model.firewall".init()
+	local ipc = require "luci.ip"
+	local vals = { }
+	ipc.neighbors({ family = 4 }, function(n)
+		if n.mac and n.dest then
+			vals[#vals+1] = n
+		end
+	end)
+-%>
+<style>
+
+#Monitor .cbi-section-table-cell:first-child{
+		text-align:right;
+        #background-color: #a9a9a9;
+}
+#Monitor td input[type="text"],
+#Monitor td select{
+	width:40% !important;
+}
+</style>
+<div class="cbi-section-create cbi-tblsection-create">
+	<br />
+	<table id="Monitor" width="100%" cellspacing="0"">
+		<tr class="cbi-section-table-titles">
+			<th colspan="8"><%:New list%></th>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Name%></td>
+			<td>
+				<input type="text" class="cbi-input-text" id="_newlist.name" name="_newlist.name" placeholder="-" />
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Protocol%></td>
+			<td>
+				<select class="cbi-input-select" id="_newlist.proto" name="_newlist.proto">
+					<option value="all"><%:All%></option>
+					<option value="tcp udp">TCP+UDP</option>
+					<option value="tcp">TCP</option>
+					<option value="udp">UDP</option>
+					<option value="icmp">ICMP</option>
+					<!--<option value="other"><%:Other...%></option>-->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Match ICMP type%></td>
+			<td>
+				<select class="cbi-input-select" id="_newlist.icmp_type" name="_newlist.icmp_type">
+					<option value=""><%:All%></option>
+					<option value="echo-reply"><%:echo-reply%></option>
+					<option value="destination-unreachable"><%:destination-unreachable%></option>
+					<option value="network-unreachable"><%:network-unreachable%></option>
+					<option value="host-unreachable"><%:host-unreachable%></option>
+					<option value="protocol-unreachable"><%:protocol-unreachable%></option>
+					<option value="port-unreachable"><%:port-unreachable%></option>
+					<option value="fragmentation-needed"><%:fragmentation-needed%></option>
+					<option value="source-route-failed"><%:source-route-failed%></option>
+					<option value="network-unknown"><%:network-unknown%></option>
+					<option value="host-unknown"><%:host-unknown%></option>
+					<option value="network-prohibited"><%:network-prohibited%></option>
+					<option value="host-prohibited"><%:host-prohibited%></option>
+					<option value="TOS-network-unreachable"><%:TOS-network-unreachable%></option>
+					<option value="TOS-host-unreachable"><%:TOS-host-unreachable%></option>
+					<option value="communication-prohibited"><%:communication-prohibited%></option>
+					<option value="host-precedence-violation"><%:host-precedence-violation%></option>
+					<option value="precedence-cutoff"><%:precedence-cutoff%></option>
+					<option value="source-quench"><%:source-quench%></option>
+					<option value="redirect"><%:redirect%></option>
+					<option value="network-redirect"><%:network-redirect%></option>
+					<option value="host-redirect"><%:host-redirect%></option>
+					<option value="TOS-network-redirect"><%:TOS-network-redirect%></option>
+					<option value="TOS-host-redirect"><%:TOS-host-redirect%></option>
+					<option value="echo-request"><%:echo-request%></option>
+					<option value="router-advertisement"><%:router-advertisement%></option>
+					<option value="router-solicitation"><%:router-solicitation%></option>
+					<option value="time-exceeded"><%:time-exceeded%></option>
+					<option value="ttl-zero-during-transit"><%:ttl-zero-during-transit%></option>
+					<option value="ttl-zero-during-reassembly"><%:ttl-zero-during-reassembly%></option>
+					<option value="parameter-problem"><%:parameter-problem%></option>
+					<option value="ip-header-bad"><%:ip-header-bad%></option>
+					<option value="required-option-missing"><%:required-option-missing%></option>
+					<option value="timestamp-request"><%:timestamp-request%></option>
+					<option value="timestamp-reply"><%:timestamp-reply%></option>
+					<option value="address-mask-request"><%:address-mask-request%></option>
+					<option value="address-mask-reply"><%:address-mask-reply%></option>
+					<!--<option value="other"><%:Other...%></option>-->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Local IP address%></td>
+			<td>
+				<input type="text" class="cbi-input-text" id="_newlist.src_ip" name="_newlist.src_ip" placeholder="<%:Any%>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Local MAC address%></td>
+			<td>
+				<input type="text" class="cbi-input-text" id="_newlist.src_mac" name="_newlist.src_mac" placeholder="<%:Any%>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Destination IP address%></td>
+			<td>
+				<input type="text" class="cbi-input-text" id="_newlist.des_ip" name="_newlist.des_ip" placeholder="<%:Any%>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="cbi-section-table-cell" width="40%"><%:Action%></td>
+			<td>
+				<select class="cbi-input-select" id="_newlist.action" name="_newlist.action" />
+					<option value="ACCEPT"><%:ACCEPT%></option>
+					<option value="REJECT"><%:REJECT%></option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="40%"></td>
+			<td style="text-align:right;" class="cbi-section-table-cell">
+				<input type="submit" class="cbi-button cbi-button-add" name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.<%=section%>" value="<%:Add%>" />
+			</td>
+		</tr>
+	</table>
+
+	<script type="text/javascript">//<![CDATA[
+		//cbi_validate_field('_newlist.extport', true, 'portrange');
+		cbi_validate_field('_newlist.src_ip', true, 'host');
+		cbi_validate_field('_newlist.src_mac', true, 'macaddr');
+		cbi_validate_field('_newlist.des_ip', true, 'host');
+		//cbi_validate_field('_newlist.intport', true, 'portrange');
+		cbi_combobox_init('_newlist.src_ip', {
+			<% first = true; for _,z in ipairs(vals) do%>
+				<%- if first then first = false else %>,<% end -%>'<%=z.dest%>': '<%=z.dest%> (<%=z.mac%>)'
+			<%- end %> }, '', '<%: -- custom -- %>');
+		
+		cbi_combobox_init('_newlist.src_mac', {
+			<% first = true; for _,z in ipairs(vals) do%>
+				<%- if first then first = false else %>,<% end -%>'<%=z.mac%>': '<%=z.mac%> (<%=z.dest%>)'
+			<%- end %> }, '', '<%: -- custom -- %>');
+			
+		cbi_combobox_init('_newlist.des_ip', {
+			<% first = true; for _,z in ipairs(vals) do%>
+				<%- if first then first = false else %>,<% end -%>'<%=z.dest%>': '<%=z.dest%> (<%=z.mac%>)'
+			<%- end %> }, '', '<%: -- custom -- %>');
+		cbi_validate_field('cbi.cts.<%=self.config%>.<%=self.sectiontype%>.<%=section%>', true, 'uciname');
+	//]]></script>
+</div>

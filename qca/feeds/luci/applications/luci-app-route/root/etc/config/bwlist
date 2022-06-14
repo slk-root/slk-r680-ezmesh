@@ -1,0 +1,6 @@
+
+config bwlist 'main'
+	option mode 'white'
+	option enabled '0'
+
+
